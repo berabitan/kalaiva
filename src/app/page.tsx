@@ -1,18 +1,16 @@
 import { createClient } from '@supabase/supabase-js';
 
-// Safe fallback values so Vercel builds cleanly even if env variables fail to load
-const supabaseUrl =
-  process.env.NEXT_PUBLIC_SUPABASE_URL ||
-  'https://btnswdtodsmrnjexzlng.supabase.co';
-
-const supabaseAnonKey =
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ||
-  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJ0bnN3ZHRvZHNtcm5qZXh6bG5nIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MjQ1MTk5NjAsImV4cCI6MjA0MDA5NTk2MH0';
-
-const supabase = createClient(supabaseUrl, supabaseAnonKey);
-
 export default async function Home() {
-  // Fetch artworks from your Supabase database
+  const supabaseUrl =
+    process.env.NEXT_PUBLIC_SUPABASE_URL ||
+    'https://btnswdtodsmrnjexzlng.supabase.co';
+
+  const supabaseAnonKey =
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ||
+    'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJ0bnN3ZHRvZHNtcm5qZXh6bG5nIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MjQ1MTk5NjAsImV4cCI6MjA0MDA5NTk2MH0';
+
+  const supabase = createClient(supabaseUrl, supabaseAnonKey);
+
   const { data: artworks, error } = await supabase.from('artworks').select('*');
 
   return (
