@@ -4,7 +4,8 @@ import { useState } from 'react';
 import { createClient } from '@supabase/supabase-js';
 
 const supabaseUrl = 'https://btnswdtodsmrnjexzlng.supabase.co';
-const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || '';
+// Replace the string below with your active Supabase legacy anon key (starting with eyJhbG...)
+const supabaseAnonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJ0bnN3ZHRvZHNtcm5qZXh6bG5nIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODc1Njk5NTYsImV4cCI6MjEwMzE0NTk1Nn0.VGQriqWTnuSsmG3PEygyeuGY22HbRVwUkuWaFtrl9aY';
 
 const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
@@ -72,7 +73,7 @@ export default function UploadPage() {
         </h1>
 
         {message && (
-          <p className="mb-4 text-sm text-center font-semibold text-emerald-400">
+          <p className={`mb-4 text-sm text-center font-semibold ${message.startsWith('Error') ? 'text-red-400' : 'text-emerald-400'}`}>
             {message}
           </p>
         )}
