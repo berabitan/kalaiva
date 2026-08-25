@@ -4,8 +4,9 @@ export const dynamic = 'force-dynamic';
 
 export default async function Home() {
   const supabaseUrl = 'https://btnswdtodsmrnjexzlng.supabase.co';
-  const supabaseAnonKey =
-    'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJ0bnN3ZHRvZHNtcm5qZXh6bG5nIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MjQ1MTk5NjAsImV4cCI6MjA0MDA5NTk2MH0';
+  
+  // Paste your copied publishable key below inside the quotes
+  const supabaseAnonKey = 'PASTE_YOUR_COPIED_KEY_HERE';
 
   const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
