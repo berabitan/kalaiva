@@ -1,6 +1,6 @@
 import Link from 'next/link';
 
-// Force dynamic rendering on every request
+// Force dynamic rendering on every request to prevent caching issues
 export const revalidate = 0;
 
 export default async function Home() {
@@ -11,7 +11,7 @@ export default async function Home() {
 
   if (url && key) {
     try {
-      const res = await fetch(`${url}/rest/v1/artworks?select=*&order=created_at.desc`, {
+      const res = await fetch(`${url}/rest/v1/artworks?select=*&order=id.desc`, {
         headers: {
           apikey: key,
           Authorization: `Bearer ${key}`,
@@ -61,10 +61,10 @@ export default async function Home() {
                   />
                   <div className="p-5">
                     <h2 className="text-xl font-bold text-white mb-1">{art.title}</h2>
-                    <p className="text-neutral-400 text-sm mb-4">By {art.artist_name}</p>
+                    <p className="text-neutral-400 text-sm mb-4">By {art.artist || 'Unknown Artist'}</p>
                     <div className="flex justify-between items-center pt-3 border-t border-neutral-800">
                       <span className="text-xl font-bold text-emerald-400">
-                        ₹{Number(art.price).toLocaleString('en-IN')}
+                        ₹{Number(art.price_inr).toLocaleString('en-IN')}
                       </span>
                       <button className="bg-amber-500 hover:bg-amber-400 text-black px-4 py-2 rounded-lg font-semibold text-sm transition">
                         Buy Now
