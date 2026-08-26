@@ -1,127 +1,75 @@
 import { createClient } from '@supabase/supabase-js';
 import Link from 'next/link';
 
-export const dynamic = 'force-dynamic';
+// Initialize Supabase Client
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || '';
+const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || '';
+const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
 export default async function Home() {
-  const supabaseUrl = 'https://btnswdtodsmrnjexzlng.supabase.co';
-  const supabaseAnonKey =
-    'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJ0bnN3ZHRvZHNtcm5qZXh6bG5nIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODc1Njk5NTYsImV4cCI6MjEwMzE0NTk1Nn0.VGQriqWTnuSsmG3PEygyeuGY22HbRVwUkuWaFtrl9aY';
+  // Fetch artworks directly on the server
+  const { data: artworks, error } = await supabase
+    .from('artworks')
+    .select('*')
+    .order('created_at', { ascending: false });
 
-  const supabase = createClient(supabaseUrl, supabaseAnonKey);
-
-  const { data: artworks, error } = await supabase.from('artworks').select('*');
+  if (error) {
+    console.error('Error fetching artworks:', error);
+  }
 
   return (
-    <div className="min-h-screen bg-neutral-950 text-neutral-100 font-sans">
-      {/* Navigation Header */}
-      <header className="border-b border-neutral-800 bg-neutral-900/50 backdrop-blur-md sticky top-0 z-50">
-        <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
-          <Link href="/" className="text-2xl font-serif font-bold tracking-wider text-amber-500">
-            KALAIVA
+    <div className="min-h-screen bg-neutral-950 text-white flex flex-col justify-between">
+      <div className="p-8">
+        <header className="max-w-6xl mx-auto flex justify-between items-center mb-12 border-b border-neutral-800 pb-6">
+          <h1 className="text-3xl font-bold tracking-wide text-amber-500">KALAIVA</h1>
+          <Link 
+            href="/upload" 
+            className="bg-amber-500 hover:bg-amber-400 text-black px-4 py-2 rounded-md font-semibold text-sm transition"
+          >
+            + Sell Artwork
           </Link>
-          <nav className="flex items-center space-x-6 text-sm">
-            <Link href="#gallery" className="hover:text-amber-400 transition">
-              Explore Art
-            </Link>
-            <Link
-              href="/upload"
-              className="bg-amber-500 hover:bg-amber-400 text-neutral-950 font-semibold px-4 py-2 rounded-md transition"
-            >
-              Sell Artwork
-            </Link>
-          </nav>
-        </div>
-      </header>
+        </header>
 
-      {/* Hero Section */}
-      <section className="max-w-5xl mx-auto text-center py-20 px-6">
-        <h1 className="text-5xl md:text-6xl font-serif font-bold tracking-tight mb-6 text-neutral-100">
-          Discover & Collect <span className="text-amber-500">Authentic</span> Indian Art
-        </h1>
-        <p className="text-lg text-neutral-400 max-w-2xl mx-auto mb-8">
-          A curated marketplace bringing traditional craftsmanship and modern fine art directly from independent creators to your collection.
-        </p>
-        <a
-          href="#gallery"
-          className="inline-block bg-neutral-800 hover:bg-neutral-700 text-amber-400 border border-neutral-700 px-8 py-3 rounded-full font-medium transition"
-        >
-          View Collection
-        </a>
-      </section>
-
-      {/* Marketplace Grid */}
-      <main id="gallery" className="max-w-7xl mx-auto px-6 pb-24">
-        <h2 className="text-2xl font-serif font-bold mb-8 border-b border-neutral-800 pb-4 text-neutral-200">
-          Featured Works
-        </h2>
-
-        {error && (
-          <p className="text-red-400 text-center py-10">
-            Unable to load artworks: {error.message}
-          </p>
-        )}
-
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {artworks && artworks.length > 0 ? (
-            artworks.map((art: any) => (
-              <div
-                key={art.id}
-                className="bg-neutral-900 border border-neutral-800 rounded-xl overflow-hidden hover:border-amber-500/50 transition duration-300 flex flex-col justify-between"
+        <main className="max-w-6xl mx-auto">
+          {!artworks || artworks.length === 0 ? (
+            <div className="text-center py-20 bg-neutral-900 border border-neutral-800 rounded-xl">
+              <p className="text-neutral-400 text-lg mb-4">No artworks found in the gallery yet.</p>
+              <Link 
+                href="/upload" 
+                className="inline-block bg-amber-500 text-black px-6 py-2.5 rounded-lg font-semibold hover:bg-amber-400 transition"
               >
-                <div>
-                  <div className="h-64 w-full bg-neutral-950 overflow-hidden relative">
-                    {art.image_url ? (
-                      <img
-                        src={art.image_url}
-                        alt={art.title}
-                        className="w-full h-full object-cover hover:scale-105 transition duration-500"
-                      />
-                    ) : (
-                      <div className="flex items-center justify-center h-full text-neutral-600">
-                        No Image Available
-                      </div>
-                    )}
-                  </div>
-                  <div className="p-6">
-                    <h3 className="text-xl font-serif font-bold text-neutral-100 mb-1">
-                      {art.title}
-                    </h3>
-                    <p className="text-neutral-400 text-sm mb-4">By {art.artist}</p>
-                  </div>
-                </div>
-
-                <div className="p-6 pt-0 flex items-center justify-between border-t border-neutral-800/50 mt-4">
-                  <div>
-                    <span className="text-xs text-neutral-500 uppercase tracking-wider block">
-                      Price
-                    </span>
-                    <span className="text-xl font-bold text-emerald-400">
-                      ₹{art.price_inr?.toLocaleString('en-IN')}
-                    </span>
-                  </div>
-                  <button className="bg-amber-500 hover:bg-amber-400 text-neutral-950 font-semibold px-4 py-2 rounded transition">
-                    Inquire / Buy
-                  </button>
-                </div>
-              </div>
-            ))
-          ) : (
-            <div className="col-span-full text-center py-16 bg-neutral-900/50 rounded-xl border border-neutral-800">
-              <p className="text-neutral-400 text-lg mb-4">No artworks listed yet.</p>
-              <Link
-                href="/upload"
-                className="text-amber-400 hover:underline font-semibold"
-              >
-                Be the first artist to publish a piece $\rightarrow$
+                Apply to List Your Art Today
               </Link>
             </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+              {artworks.map((art) => (
+                <div key={art.id} className="bg-neutral-900 rounded-xl overflow-hidden border border-neutral-800 hover:border-neutral-700 transition">
+                  <img 
+                    src={art.image_url} 
+                    alt={art.title} 
+                    className="w-full h-72 object-cover"
+                  />
+                  <div className="p-5">
+                    <h2 className="text-xl font-bold text-white mb-1">{art.title}</h2>
+                    <p className="text-neutral-400 text-sm mb-4">By {art.artist_name}</p>
+                    <div className="flex justify-between items-center pt-3 border-t border-neutral-800">
+                      <span className="text-xl font-bold text-emerald-400">
+                        ₹{Number(art.price).toLocaleString('en-IN')}
+                      </span>
+                      <button className="bg-amber-500 hover:bg-amber-400 text-black px-4 py-2 rounded-lg font-semibold text-sm transition">
+                        Buy Now
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
           )}
-        </div>
-      </main>
+        </main>
+      </div>
 
-      {/* Footer */}
-      <footer className="border-t border-neutral-800 bg-neutral-900 py-8 text-center text-sm text-neutral-500">
+      <footer className="border-t border-neutral-800 bg-neutral-900 py-8 text-center text-sm text-neutral-400">
         <p>© 2026 Kalaiva. All rights reserved.</p>
       </footer>
     </div>
