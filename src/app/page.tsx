@@ -1,20 +1,29 @@
-import { createClient } from '@supabase/supabase-js';
 import Link from 'next/link';
 
-// Initialize Supabase Client
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || '';
-const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || '';
-const supabase = createClient(supabaseUrl, supabaseAnonKey);
+// Force dynamic rendering on every request
+export const revalidate = 0;
 
 export default async function Home() {
-  // Fetch artworks directly on the server
-  const { data: artworks, error } = await supabase
-    .from('artworks')
-    .select('*')
-    .order('created_at', { ascending: false });
+  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 
-  if (error) {
-    console.error('Error fetching artworks:', error);
+  let artworks: any[] = [];
+
+  if (url && key) {
+    try {
+      const res = await fetch(`${url}/rest/v1/artworks?select=*&order=created_at.desc`, {
+        headers: {
+          apikey: key,
+          Authorization: `Bearer ${key}`,
+        },
+        cache: 'no-store',
+      });
+      if (res.ok) {
+        artworks = await res.json();
+      }
+    } catch (e) {
+      console.error('Failed to fetch artworks:', e);
+    }
   }
 
   return (
@@ -31,7 +40,7 @@ export default async function Home() {
         </header>
 
         <main className="max-w-6xl mx-auto">
-          {!artworks || artworks.length === 0 ? (
+          {artworks.length === 0 ? (
             <div className="text-center py-20 bg-neutral-900 border border-neutral-800 rounded-xl">
               <p className="text-neutral-400 text-lg mb-4">No artworks found in the gallery yet.</p>
               <Link 
